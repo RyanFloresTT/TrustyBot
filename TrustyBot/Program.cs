@@ -30,15 +30,21 @@ public class Program
     {
         var guild = client.GetGuild(GUILD_ID);
 
-        var guildCommand = new SlashCommandBuilder()
+        var listRolesCommand = new SlashCommandBuilder()
             .WithName("list-roles")
             .WithDescription("This is my first guild slash command!")
             .AddOption("user", ApplicationCommandOptionType.User, "The users whos roles you want to be listed", isRequired: true);
 
+        var tellJokeCommand = new SlashCommandBuilder()
+            .WithName("tell-joke")
+            .WithDescription("Tells a joke using a user's name.")
+            .AddOption("user", ApplicationCommandOptionType.User, "The user you want to tell a joke about", isRequired: true);
+
         try
         {
             // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
-            await guild.CreateApplicationCommandAsync(guildCommand.Build());
+            await guild.CreateApplicationCommandAsync(listRolesCommand.Build());
+            await guild.CreateApplicationCommandAsync(tellJokeCommand.Build());
         }
         catch (HttpException exception)
         {
@@ -53,6 +59,9 @@ public class Program
         {
             case "list-roles":
                 await HandleListRoleCommand(command);
+                break;
+            case "tell-joke":
+                await HandleTellJokeCommand(command);
                 break;
         }
     }
@@ -74,6 +83,13 @@ public class Program
 
         // Now, Let's respond with the embed.
         await command.RespondAsync(embed: embedBuiler.Build());
+    }
+
+    private async Task HandleTellJokeCommand(SocketSlashCommand command)
+    {
+        var guildUser = (SocketGuildUser)command.Data.Options.First().Value;
+        var joke = Joke.GetNewJokeAsync(guildUser.Mention).Result;
+        await command.RespondAsync(joke.Value);
     }
 
     private Task Log(LogMessage msg)
