@@ -2,49 +2,51 @@
 using Discord;
 using Discord.Net;
 using Newtonsoft.Json;
+using Discord.Commands;
+using System.Threading.Tasks;
 
 public class Program
 {
     public static Task Main(string[] args) => new Program().MainAsync();
 
-    private DiscordSocketClient client;
-    string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
-    const ulong GUILD_ID = 1125167218125181071;
+    private static DiscordSocketClient client;
+    private string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
+    private const ulong GUILD_ID = 1125167218125181071;
+    private static List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>();
+
+    public static DiscordSocketClient Client { get => client; set => client = value; }
 
     public async Task MainAsync()
     {
-        client = new DiscordSocketClient();
+        Client = new DiscordSocketClient();
 
-        client.Log += Log;
-        client.Ready += Client_Ready;
-        client.SlashCommandExecuted += SlashCommandHandler;
+        Client.Log += Log;
+        Client.Ready += Client_Ready;
+        Client.SlashCommandExecuted += SlashCommandHandler;
 
-        await client.LoginAsync(TokenType.Bot, token);
-        await client.StartAsync();
+        await Client.LoginAsync(TokenType.Bot, token);
+        await Client.StartAsync();
         await Task.Delay(-1);
     }
-    
-
 
     public async Task Client_Ready()
     {
-        var guild = client.GetGuild(GUILD_ID);
+        var guild = Client.GetGuild(GUILD_ID);
 
         var listRolesCommand = new SlashCommandBuilder()
             .WithName("list-roles")
             .WithDescription("This is my first guild slash command!")
             .AddOption("user", ApplicationCommandOptionType.User, "The users whos roles you want to be listed", isRequired: true);
 
-        var tellJokeCommand = new SlashCommandBuilder()
-            .WithName("tell-joke")
-            .WithDescription("Tells a joke using a user's name.")
-            .AddOption("user", ApplicationCommandOptionType.User, "The user you want to tell a joke about", isRequired: true);
+        commands.Add(listRolesCommand);
 
         try
         {
             // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
-            await guild.CreateApplicationCommandAsync(listRolesCommand.Build());
-            await guild.CreateApplicationCommandAsync(tellJokeCommand.Build());
+            foreach (var command in commands)
+            {
+                await guild.CreateApplicationCommandAsync(command.Build());
+            }
         }
         catch (HttpException exception)
         {
@@ -53,43 +55,21 @@ public class Program
         }
     }
 
+    public static async Task AddToCommandList(SlashCommandBuilder command)
+    {
+        Task taskA = Task.Run(() => commands.Add(command));
+        await taskA;
+    }
+
+    public static async Task RemoveFromCommandList(SlashCommandBuilder command)
+    {
+        Task taskA = Task.Run(() => commands.Remove(command));
+        await taskA;
+    }
+
     private async Task SlashCommandHandler(SocketSlashCommand command)
     {
-        switch (command.Data.Name)
-        {
-            case "list-roles":
-                await HandleListRoleCommand(command);
-                break;
-            case "tell-joke":
-                await HandleTellJokeCommand(command);
-                break;
-        }
-    }
-
-    private async Task HandleListRoleCommand(SocketSlashCommand command)
-    {
-        // We need to extract the user parameter from the command. since we only have one option and it's required, we can just use the first option.
-        var guildUser = (SocketGuildUser)command.Data.Options.First().Value;
-
-        // We remove the everyone role and select the mention of each role.
-        var roleList = string.Join(",\n", guildUser.Roles.Where(x => !x.IsEveryone).Select(x => x.Mention));
-
-        var embedBuiler = new EmbedBuilder()
-            .WithAuthor(guildUser.ToString(), guildUser.GetAvatarUrl() ?? guildUser.GetDefaultAvatarUrl())
-            .WithTitle("Roles")
-            .WithDescription(roleList)
-            .WithColor(Color.Green)
-            .WithCurrentTimestamp();
-
-        // Now, Let's respond with the embed.
-        await command.RespondAsync(embed: embedBuiler.Build());
-    }
-
-    private async Task HandleTellJokeCommand(SocketSlashCommand command)
-    {
-        var guildUser = (SocketGuildUser)command.Data.Options.First().Value;
-        var joke = Joke.GetNewJokeAsync(guildUser.Mention).Result;
-        await command.RespondAsync(joke.Value);
+        await CommandHandler.HandleCommand(command);
     }
 
     private Task Log(LogMessage msg)
