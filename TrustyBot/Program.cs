@@ -4,6 +4,7 @@ using Discord.Net;
 using Newtonsoft.Json;
 using TrustyBot.Modules.JokeCommand;
 using TrustyBot.Modules.AdviceCommand;
+using TrustyBot.Modules.GameRouletteCommand;
 
 public class Program
 {
@@ -33,6 +34,8 @@ public class Program
         Console.WriteLine("Client Ready.");
         _ = new JokeCommand();
         _ = new AdviceCommand();
+        _ = new GameRouletteCommand();
+        _ = new AddGameToListCommand();
 
         var guild = Client.GetGuild(GUILD_ID);
 
