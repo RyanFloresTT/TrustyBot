@@ -2,8 +2,8 @@
 using Discord;
 using Discord.Net;
 using Newtonsoft.Json;
-using Discord.Commands;
-using System.Threading.Tasks;
+using TrustyBot.Modules.JokeCommand;
+using TrustyBot.Modules.AdviceCommand;
 
 public class Program
 {
@@ -14,7 +14,7 @@ public class Program
     private const ulong GUILD_ID = 1125167218125181071;
     private static List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>();
 
-    public static DiscordSocketClient Client { get => client; set => client = value; }
+    public static DiscordSocketClient Client { get => client; private set => client = value; }
 
     public async Task MainAsync()
     {
@@ -22,7 +22,6 @@ public class Program
 
         Client.Log += Log;
         Client.Ready += Client_Ready;
-        Client.SlashCommandExecuted += SlashCommandHandler;
 
         await Client.LoginAsync(TokenType.Bot, token);
         await Client.StartAsync();
@@ -31,18 +30,14 @@ public class Program
 
     public async Task Client_Ready()
     {
+        Console.WriteLine("Client Ready.");
+        _ = new JokeCommand();
+        _ = new AdviceCommand();
+
         var guild = Client.GetGuild(GUILD_ID);
-
-        var listRolesCommand = new SlashCommandBuilder()
-            .WithName("list-roles")
-            .WithDescription("This is my first guild slash command!")
-            .AddOption("user", ApplicationCommandOptionType.User, "The users whos roles you want to be listed", isRequired: true);
-
-        commands.Add(listRolesCommand);
 
         try
         {
-            // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
             foreach (var command in commands)
             {
                 await guild.CreateApplicationCommandAsync(command.Build());
@@ -55,21 +50,15 @@ public class Program
         }
     }
 
-    public static async Task AddToCommandList(SlashCommandBuilder command)
+    public static void RegisterCommand(SlashCommandBuilder command)
     {
-        Task taskA = Task.Run(() => commands.Add(command));
-        await taskA;
+        commands.Add(command);
+        Console.WriteLine(command.Name + " registered.");
     }
 
-    public static async Task RemoveFromCommandList(SlashCommandBuilder command)
+    public static void UnregisterCommand(SlashCommandBuilder command)
     {
-        Task taskA = Task.Run(() => commands.Remove(command));
-        await taskA;
-    }
-
-    private async Task SlashCommandHandler(SocketSlashCommand command)
-    {
-        await CommandHandler.HandleCommand(command);
+        commands.Remove(command);
     }
 
     private Task Log(LogMessage msg)
