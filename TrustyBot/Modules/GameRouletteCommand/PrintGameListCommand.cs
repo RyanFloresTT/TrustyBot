@@ -1,18 +1,19 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Schema;
 using TrustyBot.Utils;
 
 namespace TrustyBot.Modules.GameRouletteCommand
 {
-    public class GameRouletteCommand
+    internal class PrintGameListCommand
     {
-        private const string COMMAND_NAME = "game-roulette";
-        private const string COMMAND_DESC = "Spin the wheel to get a random game from your list.";
+        private const string COMMAND_NAME = "show-games";
+        private const string COMMAND_DESC = "Show all games on the list.";
         const string FILE_DIR = "D:\\Repos\\Discord Bots\\TrustyBot\\TrustyBot\\Modules\\GameRouletteCommand\\games.json";
         Random rand = new();
 
-        public GameRouletteCommand()
+        public PrintGameListCommand()
         {
             Program.Client.SlashCommandExecuted += Handle_SlashCommandExecuted;
 
@@ -36,20 +37,26 @@ namespace TrustyBot.Modules.GameRouletteCommand
         private async Task PerformCommand(SocketSlashCommand command)
         {
             var games = GameDataFileUtils.ReadFromJSON(FILE_DIR);
-            var game = GetRandomFromList(games);
+            Console.WriteLine(games.ToArray()[0]);
 
             var embedBuiler = new EmbedBuilder()
-                .WithTitle(game.Name)
-                .WithDescription(game.Description)
-                .WithColor(Color.DarkBlue)
-                .WithCurrentTimestamp();
+                    .WithTitle(games[0].Name)
+                    .WithDescription(games[0].Description)
+                    .WithColor(Color.Default)
+                    .WithCurrentTimestamp();
 
             await command.RespondAsync(embed: embedBuiler.Build());
         }
-
-        private GameData GetRandomFromList(List<GameData> list)
+        
+        private async Task PrintGameAsync(GameData game, SocketSlashCommand command)
         {
-            return list[rand.Next(list.Count)];
+            var embedBuiler = new EmbedBuilder()
+                    .WithTitle(game.Name)
+                    .WithDescription(game.Description)
+                    .WithColor(Color.Default)
+                    .WithCurrentTimestamp();
+
+            await command.RespondAsync(embed: embedBuiler.Build());
         }
     }
 }

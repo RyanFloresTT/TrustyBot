@@ -12,7 +12,7 @@ public class Program
 
     private static DiscordSocketClient client;
     private string token = Environment.GetEnvironmentVariable("BOT_TOKEN");
-    private const ulong GUILD_ID = 1125167218125181071;
+    private const ulong GUILD_ID = 737478845241884742;
     private static List<SlashCommandBuilder> commands = new List<SlashCommandBuilder>();
 
     public static DiscordSocketClient Client { get => client; private set => client = value; }
@@ -36,6 +36,8 @@ public class Program
         _ = new AdviceCommand();
         _ = new GameRouletteCommand();
         _ = new AddGameToListCommand();
+        _ = new RemoveGameFromListCommand();
+        _ = new PrintGameListCommand();
 
         var guild = Client.GetGuild(GUILD_ID);
 
