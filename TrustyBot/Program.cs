@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using TrustyBot.Modules.JokeCommand;
 using TrustyBot.Modules.AdviceCommand;
 using TrustyBot.Modules.GameRouletteCommand;
+using TrustyBot.Modules.CountdownToDayCommand;
 
 public class Program
 {
@@ -38,6 +39,7 @@ public class Program
         _ = new AddGameToListCommand();
         _ = new RemoveGameFromListCommand();
         _ = new PrintGameListCommand();
+        _ = new CountdownToDayCommand();
 
         var guild = Client.GetGuild(GUILD_ID);
 

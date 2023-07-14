@@ -36,25 +36,14 @@ namespace TrustyBot.Modules.GameRouletteCommand
 
         private async Task PerformCommand(SocketSlashCommand command)
         {
-            var games = GameDataFileUtils.ReadFromJSON(FILE_DIR);
-            List<Task> tasks = new();
-                
-            foreach (var game in games)
+            var gameData = GameDataFileUtils.ReadFromJSON(FILE_DIR);
+            string games = "List of Games : ";
+            foreach(var game in gameData)
             {
-                tasks.Add(PrintGameAsync(game, command));
+                games += game.Name + ". ";
             }
-            await Task.WhenAll(tasks);
-        }
-        
-        private async Task PrintGameAsync(GameData game, SocketSlashCommand command)
-        {
-            var embedBuiler = new EmbedBuilder()
-                    .WithTitle(game.Name)
-                    .WithDescription(game.Description)
-                    .WithColor(Color.Default)
-                    .WithCurrentTimestamp();
 
-            await command.RespondAsync(embed: embedBuiler.Build());
+            await command.RespondAsync($"{games}");
         }
     }
 }
