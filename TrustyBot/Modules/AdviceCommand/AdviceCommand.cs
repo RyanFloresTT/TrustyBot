@@ -13,11 +13,11 @@ namespace TrustyBot.Modules.AdviceCommand
         {
             Program.Client.SlashCommandExecuted += Handle_SlashCommandExecuted;
 
-            SlashCommandBuilder tellAdviceCommand = new SlashCommandBuilder()
+            SlashCommandBuilder command = new SlashCommandBuilder()
                 .WithName(COMMAND_NAME)
                 .WithDescription(COMMAND_DESC);
 
-            Program.RegisterCommand(tellAdviceCommand);
+            Program.RegisterCommand(command);
         }
 
         private async Task Handle_SlashCommandExecuted(SocketSlashCommand command)
