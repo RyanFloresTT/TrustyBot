@@ -40,15 +40,16 @@ namespace TrustyBot.Modules.CountdownToDayCommand
 
         private async Task PerformCommand(SocketSlashCommand command)
         {
-            var userInput = command.Data.Options.First().ToString();
+            var userInput = command.Data.Options.First().Value.ToString();
             DateTime date;
-            if (DateTime.TryParse("29/02/2021", out date))
+            if (DateTime.TryParse(userInput, out date) && date > DateTime.Now)
             {
-                await command.RespondAsync($"That is a date. {date}");
+                var daysRemaining = DateTime.Now.Date - date.Date;
+                await command.RespondAsync($"There are {-(daysRemaining.Days)} days remaining until {date.Date}");
             }
             else
             {
-                await command.RespondAsync($"That is NOT a date. {date}");
+                await command.RespondAsync($"Sorry, but \"{date}\" is either not a date, or earlier than today.");
             }
         }
     }
