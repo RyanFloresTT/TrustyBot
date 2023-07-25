@@ -38,7 +38,7 @@ namespace TrustyBot.Modules.GameRouletteCommand
             var gameData = command.Data.Options.ToArray();
             var gameName = gameData[0].Value.ToString();
 
-            GameDataFileUtils.Remove(gameName, FILE_DIR);
+            gameName.RemoveFromJSON(FILE_DIR);
 
             await command.RespondAsync($"{gameName} removed from the list!");
         }

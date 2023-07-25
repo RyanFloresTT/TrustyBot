@@ -42,7 +42,7 @@ namespace TrustyBot.Modules.GameRouletteCommand
             var game = new GameData(gameName, gameDesc);
             Console.WriteLine($"{game}");
 
-            GameDataFileUtils.Add(game, FILE_DIR);
+            game.AddToJSON(FILE_DIR);
 
             await command.RespondAsync($"{gameName} added to the list!");
         }

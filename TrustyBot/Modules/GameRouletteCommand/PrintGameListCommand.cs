@@ -36,7 +36,7 @@ namespace TrustyBot.Modules.GameRouletteCommand
 
         private async Task PerformCommand(SocketSlashCommand command)
         {
-            var gameData = GameDataFileUtils.ReadFromJSON(FILE_DIR);
+            List<GameData> gameData = FILE_DIR.ReadFromJSON<GameData>();
             string games = "List of Games : ";
             foreach(var game in gameData)
             {

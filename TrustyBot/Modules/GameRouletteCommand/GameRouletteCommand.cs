@@ -35,7 +35,7 @@ namespace TrustyBot.Modules.GameRouletteCommand
 
         private async Task PerformCommand(SocketSlashCommand command)
         {
-            var games = GameDataFileUtils.ReadFromJSON(FILE_DIR);
+            var games = FILE_DIR.ReadFromJSON<GameData>();
             var game = GetRandomFromList(games);
 
             var embedBuiler = new EmbedBuilder()

@@ -33,13 +33,10 @@ public class Program
     public async Task Client_Ready()
     {
         Console.WriteLine("Client Ready.");
-        _ = new JokeCommand();
-        _ = new AdviceCommand();
-        _ = new GameRouletteCommand();
-        _ = new AddGameToListCommand();
-        _ = new RemoveGameFromListCommand();
-        _ = new PrintGameListCommand();
-        _ = new CountdownToDayCommand();
+        Console.WriteLine("Buildilng Commands...");
+        CreateCommands();
+        Console.WriteLine("All built.");
+        
 
         var guild = Client.GetGuild(GUILD_ID);
 
@@ -72,5 +69,17 @@ public class Program
     {
         Console.WriteLine(msg.ToString());
         return Task.CompletedTask;
+    }
+
+    private void CreateCommands()
+    {
+        _ = new JokeCommand();
+        _ = new AdviceCommand();
+        _ = new GameRouletteCommand();
+        _ = new AddGameToListCommand();
+        _ = new RemoveGameFromListCommand();
+        _ = new PrintGameListCommand();
+        _ = new CountdownToDayCommand();
+        _ = new AddEventToListCommand();
     }
 }

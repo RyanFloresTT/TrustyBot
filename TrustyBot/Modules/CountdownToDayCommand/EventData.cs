@@ -2,5 +2,5 @@
 
 namespace TrustyBot.Modules.GameRouletteCommand
 {
-    public record GameData(string Name, string Description) : JSONData(Name);
+    public record EventData(string Name, DateTime DateTime) : JSONData(Name);
 }
